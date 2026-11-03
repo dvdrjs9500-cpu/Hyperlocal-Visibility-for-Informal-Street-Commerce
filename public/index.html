@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#101714">
+    <meta name="description" content="Discover local street vendors around you with StreetSpot.">
+
+    <title>StreetSpot — Discover What's Nearby</title>
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- Leaflet map library -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+</head>
+
+<body>
+
+    <div id="app">
+
+        <!-- Header -->
+        <header class="topbar">
+            <a href="/" class="brand">
+                <span class="brand-icon">📍</span>
+                <span>Street<span class="brand-highlight">Spot</span></span>
+            </a>
+
+            <div class="header-actions">
+                <span id="location-status">Finding location...</span>
+                <button id="account-button" class="icon-button" aria-label="Account">
+                    👤
+                </button>
+            </div>
+        </header>
+
+        <!-- Main content -->
+        <main>
+
+            <!-- Welcome -->
+            <section class="welcome-section">
+                <div>
+                    <p class="eyebrow">YOUR LOCAL DISCOVERY RADAR</p>
+                    <h1>What's happening <span>near you?</span></h1>
+                    <p class="subtitle">
+                        Find street vendors, food and local treasures around you.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Role selection -->
+            <section id="role-selection" class="role-section hidden">
+                <h2>Welcome to StreetSpot</h2>
+                <p>How would you like to use StreetSpot?</p>
+
+                <div class="role-cards">
+                    <button class="role-card" data-role="consumer">
+                        <span class="role-icon">🔎</span>
+                        <strong>Explore Nearby</strong>
+                        <small>Discover vendors around you</small>
+                    </button>
+
+                    <button class="role-card" data-role="vendor">
+                        <span class="role-icon">🛍️</span>
+                        <strong>I'm a Vendor</strong>
+                        <small>Show your stall to nearby customers</small>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Customer view -->
+            <section id="consumer-view" class="hidden">
+
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">LIVE AROUND YOU</p>
+                        <h2>Nearby vendors</h2>
+                    </div>
+
+                    <button id="refresh-button" class="secondary-button">
+                        ↻ Refresh
+                    </button>
+                </div>
+
+                <div class="search-container">
+                    <span>⌕</span>
+                    <input
+                        type="search"
+                        id="search-input"
+                        placeholder="Search food, juice, accessories..."
+                    >
+                </div>
+
+                <div id="category-filters" class="category-filters">
+                    <button class="filter-chip active" data-category="All">All</button>
+                    <button class="filter-chip" data-category="Street Food">🍜 Food</button>
+                    <button class="filter-chip" data-category="Accessories">🧿 Accessories</button>
+                    <button class="filter-chip" data-category="Seasonal">🌼 Seasonal</button>
+                </div>
+
+                <div class="map-container">
+                    <div id="map"></div>
+                    <div class="map-label">📍 Vendors near you</div>
+                </div>
+
+                <div class="section-heading vendor-heading">
+                    <h2>Discover nearby</h2>
+                    <span id="vendor-count">0 vendors</span>
+                </div>
+
+                <div id="vendor-list" class="vendor-grid">
+                    <div class="empty-state">
+                        <span>🔎</span>
+                        <h3>Finding vendors...</h3>
+                        <p>Nearby vendors will appear here.</p>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Vendor dashboard -->
+            <section id="vendor-view" class="hidden">
+
+                <div class="vendor-dashboard-header">
+                    <div>
+                        <p class="eyebrow">VENDOR DASHBOARD</p>
+                        <h2>Manage your stall</h2>
+                    </div>
+
+                    <span id="vendor-status" class="status-pill offline">
+                        ● Offline
+                    </span>
+                </div>
+
+                <div class="dashboard-card">
+                    <label for="stall-name">Stall name</label>
+                    <input
+                        id="stall-name"
+                        type="text"
+                        placeholder="Enter your stall name"
+                    >
+
+                    <label for="stall-category">Category</label>
+                    <select id="stall-category">
+                        <option>Street Food</option>
+                        <option>Accessories</option>
+                        <option>Seasonal</option>
+                    </select>
+
+                    <button id="save-profile" class="primary-button">
+                        Save Stall Details
+                    </button>
+                </div>
+
+                <div class="go-live-card">
+                    <div>
+                        <h3>Make your stall visible</h3>
+                        <p>Share your live location with nearby customers.</p>
+                    </div>
+
+                    <button id="go-live-button" class="primary-button">
+                        Go Live
+                    </button>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="section-heading">
+                        <h3>Your products</h3>
+                    </div>
+
+                    <label for="item-name">Product name</label>
+                    <input
+                        id="item-name"
+                        type="text"
+                        placeholder="Example: Egg dosa"
+                    >
+
+                    <label for="item-price">Price (₹)</label>
+                    <input
+                        id="item-price"
+                        type="number"
+                        min="0"
+                        placeholder="Example: 50"
+                    >
+
+                    <button id="add-item-button" class="primary-button">
+                        + Add Product
+                    </button>
+
+                    <div id="my-items" class="my-items"></div>
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- Bottom navigation -->
+        <nav class="bottom-nav">
+            <button id="explore-tab" class="nav-item active">
+                <span>⌖</span>
+                <small>Explore</small>
+            </button>
+
+            <button id="vendor-tab" class="nav-item">
+                <span>🛍️</span>
+                <small>My Stall</small>
+            </button>
+
+            <button id="switch-role" class="nav-item">
+                <span>⇄</span>
+                <small>Switch</small>
+            </button>
+        </nav>
+
+        <!-- Notifications -->
+        <div id="toast" class="toast hidden" role="status"></div>
+
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/__hatchable/events.js"></script>
+    <script src="/app.js"></script>
+
+</body>
+</html>
